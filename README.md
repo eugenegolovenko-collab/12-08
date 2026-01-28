@@ -276,9 +276,9 @@ pause
 
 MySQL попросит ввести пароль один раз. Он будет сохранён в шифрованном виде (%APPDATA%\MySQL\login-paths.json).
 
-Автоматическое восстановление, без ручного последовательного перебора инкрементов, можно реализовать примерно так:
+Автоматическое восстановление, без ручного последовательного перебора инкрементов, можно реализовать в PowerShell (restore_world.ps1) примерно так :
 
-```bat
+```power shell
 $MYSQL_BIN = "C:\Program Files\MySQL\MySQL Server 8.0\bin"
 $BACKUP_DIR = "E:\DB\MySQL"
 $DB_NAME = "world"
@@ -290,6 +290,10 @@ foreach ($file in $increment_files) {
     & "$MYSQL_BIN\mysql.exe" --login-path=local $DB_NAME < $file.FullName
 }
 Write-Host "Recovery complited. Amen!"
+```
+Запускать в PowerShell с правами администратора:
+```cmd
+powershell -ExecutionPolicy Bypass -File .\restore_world.ps1
 ```
 ---
 3.1.* В каких случаях использование реплики будет давать преимущество по сравнению с обычным резервным копированием?
