@@ -253,7 +253,7 @@ mysql -u root -p world < E:\DB\MySQL\world_increment_000002.sql
 ```
 <img width="944" height="73" alt="MySQL3" src="https://github.com/user-attachments/assets/c7bbd111-abb2-4524-9d33-f6c899b602a4" />
 
-Сделать процесс автоматичным в Windows можно используя скрипт (запускать с правами администратора):
+Сделать процесс инкрементного резервного копирования автоматичным в Windows можно используя скрипт (запускать с правами администратора):
 
 ```bat
 @echo off
@@ -276,8 +276,22 @@ pause
 
 MySQL попросит ввести пароль один раз. Он будет сохранён в шифрованном виде (%APPDATA%\MySQL\login-paths.json).
 
----
+Автоматическое восстановление, без ручного последовательного перебора инкрементов, можно реализовать примерно так:
 
+```bat
+$MYSQL_BIN = "C:\Program Files\MySQL\MySQL Server 8.0\bin"
+$BACKUP_DIR = "E:\DB\MySQL"
+$DB_NAME = "world"
+Write-Host "Full backup recovery..."
+& "$MYSQL_BIN\mysql.exe" --login-path=local $DB_NAME < "$BACKUP_DIR\$DB_NAME`_full.sql"
+$increment_files = Get-ChildItem "$BACKUP_DIR\$DB_NAME`_increment_*.sql" | Sort-Object Name
+foreach ($file in $increment_files) {
+    Write-Host "Usage increment: $($file.Name)"
+    & "$MYSQL_BIN\mysql.exe" --login-path=local $DB_NAME < $file.FullName
+}
+Write-Host "Recovery complited. Amen!"
+```
+---
 3.1.* В каких случаях использование реплики будет давать преимущество по сравнению с обычным резервным копированием?
 
 *Приведите ответ в свободной форме.*
